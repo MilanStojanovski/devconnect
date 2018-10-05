@@ -25,5 +25,7 @@ app.use('/api/posts', posts);
 
 const port = process.env.PORT || 5000;
 
+console.log('Successful Git');
+
 app.listen(port, () => console.log(`Server listening on port: ${port}`));
 
