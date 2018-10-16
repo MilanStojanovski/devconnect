@@ -28,7 +28,7 @@ module.exports = function validateRegisterInput(data) {
         errors.password = 'Password is required';
     }
     if (!Validator.equals(data.password2, data.password)) {
-        errors.confirmPasssword = 'Password must match';
+        errors.password2 = 'Password must match';
     }
 
     return {

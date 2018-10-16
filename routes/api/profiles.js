@@ -167,7 +167,7 @@ router.post('/experience', passport.authenticate('jwt', {session: false}), (req,
                 location: req.body.location,
                 from: req.body.from,
                 to: req.body.to,
-                current: req.body.current,
+                isCurrent: req.body.current,
                 description: req.body.description
             };
 
@@ -197,12 +197,12 @@ router.post('/education', passport.authenticate('jwt', {session: false}), (req, 
                 field: req.body.field,
                 from: req.body.from,
                 to: req.body.to,
-                current: req.body.current,
+                isCurrent: req.body.current,
                 description: req.body.description
             };
 
             // Add to the education array
-            profile.education.unshift(newExp);
+            profile.education.unshift(newEdu);
 
             profile.save().then(profile => res.json(profile));
         })
@@ -258,7 +258,7 @@ router.delete('/education/:edu_id', passport.authenticate('jwt', {session: false
 router.delete('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     Profile.findOneAndRemove({user: req.user.id})
         .then(() => {
-            User.findOneAndRemove({id: req.user.id})
+            User.findOneAndRemove({_id: req.user.id})
                 .then(() => res.json({success: true}))
         })
         .catch(err => {
