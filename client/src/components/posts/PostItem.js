@@ -4,21 +4,29 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+import { deletePost, addLike, removeLike } from '../../actions/postActions';
+
 class PostItem extends Component {
     onDeleteClick = id => {
-        console.log(id);
+        this.props.deletePost(id);
     };
 
     onLikeClick = id => {
-        console.log(id);
+        this.props.addLike(id);
     };
 
     onUnlikeClick = id => {
-        console.log(id);
+        this.props.removeLike(id);
+    };
+
+    findUserLike = likes => {
+        const { user } = this.props.auth;
+
+        return (likes.filter(like => like.user === user.id).length > 0);
     };
 
     render() {
-        const { post, auth } = this.props;
+        const { post, auth, showActions } = this.props;
 
         return (
             <div className="card card-body mb-3">
@@ -36,31 +44,37 @@ class PostItem extends Component {
                     </div>
                     <div className="col-md-10">
                         <p className="lead">{post.text}</p>
-                        <button
-                            onClick={this.onLikeClick.bind(this, post._id)}
-                            type="button"
-                            className="btn btn-light mr-1"
-                        >
-                            <i className="text-info fas fa-thumbs-up" />
-                            <span className="badge badge-light">{post.likes.length}</span>
-                        </button>
-                        <button
-                            onClick={this.onUnlikeClick.bind(this, post._id)}
-                            type="button"
-                            className="btn btn-light mr-1"
-                        >
-                            <i className="text-info fas fa-thumbs-down" />
-                        </button>
-                        <Link to={`/post/${post._id}`} className="btn btn-info mr-1" >Comment</Link>
-                        {post.user === auth.user.id ? (
-                            <button
-                                onClick={this.onDeleteClick.bind(this, post._id)}
-                                type="button"
-                                className="btn btn-danger mr-1"
-                            >
-                                <i className="fas fa-times" />
-                            </button>
-                        ): null}
+                        {showActions ? (
+                            <span>
+                                <button
+                                    onClick={this.onLikeClick.bind(this, post._id)}
+                                    type="button"
+                                    className="btn btn-light mr-1"
+                                >
+                                    <i className={classnames('fas fa-thumbs-up', {
+                                        'text-info': this.findUserLike(post.likes)
+                                    })} />
+                                    <span className="badge badge-light">{post.likes.length}</span>
+                                </button>
+                                <button
+                                    onClick={this.onUnlikeClick.bind(this, post._id)}
+                                    type="button"
+                                    className="btn btn-light mr-1"
+                                >
+                                    <i className="fas fa-thumbs-down" />
+                                </button>
+                                <Link to={`/post/${post._id}`} className="btn btn-info mr-1" >Comment</Link>
+                                {post.user === auth.user.id ? (
+                                    <button
+                                        onClick={this.onDeleteClick.bind(this, post._id)}
+                                        type="button"
+                                        className="btn btn-danger mr-1"
+                                    >
+                                        <i className="fas fa-times" />
+                                    </button>
+                                ): null}
+                            </span>
+                        ) : null}
                     </div>
                 </div>
             </div>
@@ -68,13 +82,20 @@ class PostItem extends Component {
     }
 }
 
+PostItem.defaultProps = {
+    showActions: true
+};
+
 PostItem.propTypes = {
     post: PropTypes.object.isRequired,
-    auth: PropTypes.object.isRequired
+    auth: PropTypes.object.isRequired,
+    deletePost: PropTypes.func.isRequired,
+    addLike: PropTypes.func.isRequired,
+    removeLike: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
     auth: state.auth
 });
 
-export default connect(mapStateToProps)(PostItem);
+export default connect(mapStateToProps, { deletePost, addLike, removeLike })(PostItem);
