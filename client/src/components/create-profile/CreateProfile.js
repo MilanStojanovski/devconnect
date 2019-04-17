@@ -29,6 +29,12 @@ class CreateProfile extends Component {
         errors: {},
     };
 
+    componentDidMount() {
+        if (Object.keys(this.props.profile).length > 0) {
+            this.props.history.push('/dashboard');
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.errors) {
             this.setState({errors: nextProps.errors});
